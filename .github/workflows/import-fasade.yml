@@ -1,0 +1,33 @@
+name: Import fasade-drone
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/import-fasade.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Last ned originalen
+        run: |
+          set -euo pipefail
+          curl -fsSL -o fasade-drone.jpg https://n.uguu.se/djPHWGfB.jpg
+          test "$(wc -c < fasade-drone.jpg)" -eq 471479
+          file fasade-drone.jpg
+      - name: Commit
+        run: |
+          git config user.email "erik@vibbing.no"
+          git config user.name "Erik Wiederstrøm"
+          git add fasade-drone.jpg
+          if git diff --cached --quiet; then
+            echo "Ingen endring"
+            exit 0
+          fi
+          git commit -m "Legg ut fasade-drone.jpg"
+          git push
